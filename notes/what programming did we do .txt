@@ -1,0 +1,486 @@
+consider xml, java, and strings.xml
+
+intents (no permission)
+    passing data without expecting result
+        //main activity
+            Intent intent = new Intent(getApplicationContext(),HatBuy.class); //HatBuy.class is the class class of the activity that would be started
+            intent.putExtra("hatType","green");
+            intent.putExtra("perItem","60");
+            startActivity(intent);
+        
+        //new activity to start
+            //receive data in onCreate
+            Bundle bundle = getIntent().getExtras();
+            String perItem = bundle.getString("perItem");
+    passing data expecting result //note, when using putExtra, always use both key and value as strings
+        //main activity
+            //declare the activity request
+            private int REQUEST=1
+            
+            //main activity (anywhere)
+            Intent intent = new Intent(getApplicationContext(),HatBuy.class); //HatBuy.class is the class class of the activity that would be started
+            intent.putExtra("hatType","green");
+            intent.putExtra("perItem","60");
+            startActivityForResult(intent, REQUEST);
+            
+            //receiving result from intent in the entire class. The data received in the parameters in the form of an Intent called data
+            @Override
+            protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+                if (requestCode == REQUEST) {// Check which request we're responding to
+                    if (resultCode == RESULT_OK) { // result code is checked because if the acitivity was cancelled, for example from clicking the smartphones back button, the following operatiopns cannot be performed since a bundle with the data was not returned
+
+                        try {
+                            if (data.getExtras().getString("hatType").equalsIgnoreCase("white")) {
+                                whiteItemsLeft -= Integer.parseInt(data.getExtras().getString("bought"));
+                            }
+                        } catch (Exception e) {
+                            //do nothing
+                        }
+                    }
+                }
+            }
+        
+        //new activity to start
+            //receive data in onCreate
+            Bundle bundle = getIntent().getExtras();
+            String perItem = bundle.getString("perItem");
+            
+            //return data from activity (in the form of an intent)
+            Intent data = new Intent();//does not need extra details
+            data.putExtra("hatType", hatType); //hat type is returned so the main activity knows which value to deduct from (items available of a color hat)
+            data.putExtra("total", String.valueOf(amtChosen * perItem + amtChosen * perItem * vat / 100)); // returns total with or without vat
+            // Activity finished return ok, return the data
+            setResult(RESULT_OK, data);
+            finish();
+            
+            //in the case of back button being pressed, the result returned must change
+            @Override
+            public void onBackPressed() {
+                Intent data = new Intent();
+                setResult(RESULT_CANCELED, data);
+                finish();
+            }
+    
+Widgets (no permission)
+    Toast
+        Context context = getApplicationContext();
+        String text = "Hello toast!";
+        int duration = Toast.LENGTH_SHORT;
+
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
+    ImageView
+        Java
+            //declare in class
+            private ImageView image;
+            
+            //reference in body (whether in oncreate or another function)
+            image = (ImageView) findViewById(R.id.costImageView);
+            
+            //change the image that is viewed to something specific
+            image.setImageResource(R.drawable.picture1);
+            
+            //return ImageView to null
+            image.setImageDrawable(null);
+        XML
+            <ImageView
+            android:id="@+id/costImageView"/>
+    ImageButton (A button with an image instead of a text)
+        Java
+            //do not need to reference the button in the java code
+            
+            public void buttonFunc(View view) {
+                //do something
+            }
+        XML
+            <ImageButton
+            android:id="@+id/imageButton"
+            android:src="@drawable/money"
+            android:onClick="buttonFunc" />
+    ListView
+        Java
+            StringBuilder sb=new StringBuilder("");
+
+            String[] test = new String[SIZE];
+
+            for(int i=0;i<SIZE;i++){
+                sb=new StringBuilder("");
+                sb.append(Integer.toString(people[i].id));
+                sb.append(",");
+                sb.append(people[i].firstName);
+                sb.append(",");
+                sb.append(people[i].lastName);
+                sb.append(",");
+                sb.append(Integer.toString(people[i].orders));
+                test[i]=sb.toString();
+            }
+
+            ArrayAdapter<String> adapter =  new ArrayAdapter(this, android.R.layout.simple_spinner_item, test);
+
+            ListView listView = (ListView) findViewById(R.id.listView);
+            listView.setAdapter(adapter);
+        XML
+            <ListView
+            android:id="@+id/listView"/>
+    Spinner 
+        From strings.xml
+            strings.xml
+                <?xml version="1.0" encoding="utf-8"?>
+                <resources>
+                    <string-array name="planets_array">
+                        <item>Mercury</item>
+                        <item>Venus</item>
+                        <item>Earth</item>
+                        <item>Mars</item>
+                        <item>Jupiter</item>
+                        <item>Saturn</item>
+                        <item>Uranus</item>
+                        <item>Neptune</item>
+                    </string-array>
+                </resources>
+            Java
+                Spinner spinner = (Spinner) findViewById(R.id.spinner);
+                // Create an ArrayAdapter using the string array and a default spinner layout
+                ArrayAdapter<String> adapter = ArrayAdapter.createFromResource(this, R.array.planets_array, android.R.layout.simple_spinner_item);
+                // Specify the layout to use when the list of choices appears
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                // Apply the adapter to the spinner
+                spinner.setAdapter(adapter);
+            XML
+                <Spinner
+                android:id="@+id/planets_spinner"/>
+        From array in Java file (change)
+            ArrayAdapter<String> adapter =  new ArrayAdapter(this, android.R.layout.simple_spinner_item, arr);
+            
+            //array read from
+            String[] arr = new String [2];
+            arr[0] = "1";
+            arr[1] = "2";
+
+            
+    EditText (data can be changed by user)
+        //declare in class
+        private EditText purchaseEdit;
+        
+        //reference in body (whether in oncreate or another function)
+        purchaseEdit=(EditText) findViewById(R.id.purchaseEdit);
+        
+        //get text that was changed 
+        String data = purchaseEdit.getText().toString();
+        
+        //get length of data to determine if data was entered
+        int length = purchaseEdit.getText().toString().length();
+        
+        //change edittext
+        purchaseEdit.setText("newData");
+    TextView
+        --similar to EditText--
+    Button
+        //do not need to reference the button in the java code
+    
+        Java
+            public void calculateFunc(View view) {
+                //do something
+            }
+        
+        XML
+            <Button
+                android:text="Calculate"
+                android:id="@+id/calculateBtn"
+                android:onClick="calculateFunc" />
+
+    
+unknown
+    difference between checkbox and radioGroup. With the radioGroup listener, the entire group is listened to for a change, and when it changes, the id can be used to identify which was the change. While as for a checkbox, it must be set for each box
+
+    checkbox
+        Java
+            //declare in class
+            private CheckBox check;
+            
+            //reference in body (whether in oncreate or another function)
+            check = (CheckBox) findViewById(R.id.checkBox);
+            
+            //set listener
+            check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                    //sets the vat for future calculation
+                    if(isChecked) vat=15;
+                    else vat=0;
+
+                    Log.d("checkbox","checked");
+                }
+            });
+        XML
+            <CheckBox
+            android:text="Vat 15%"
+            android:id="@+id/checkBox"
+            android:checked="false" /> //assume default is false, so dont have to do this 
+    radiobox (radioGroup) 
+        Java
+            //declare in class
+            private RadioGroup radioGroup;
+            
+            //reference in body (whether in oncreate or another function)
+            radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
+            
+            //set listener
+            radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    // checkedId is the RadioButton selected
+                    RadioButton rb=(RadioButton)findViewById(checkedId);
+                    Toast.makeText(getApplicationContext(), rb.getText().toString(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        XML
+            <RadioGroup
+                android:id="@+id/radioGroup">
+
+                <RadioButton
+                    android:id="@+id/femaleselected"
+                    android:checked="true" //default is false, so this had to be done
+                    android:text="female"/>
+
+                <RadioButton
+                    android:id="@+id/maleselected"
+                    android:text="male"/>
+            </RadioGroup> //radioGroup must be closed like this
+
+Files (a file name must be declared, private static final String FILENAME = "fileName";)
+    CRUD 
+        Create
+            int SIZE = 4; 
+            
+            //create an array of data to save
+            Person[] people = new Person[SIZE]; //how to create a class is demonstrated later on in this file
+            people[0] = new Person("Bill", "Smith", 20);
+            people[1] = new Person("Fred", "Bloggs", 30);
+            people[2] = new Person("Joe", "Phillips", 40);
+            people[3] = new Person("Ria", "Maharaj", 50);
+
+            try {
+                FileOutputStream fout = openFileOutput(FILENAME, Context.MODE_PRIVATE);
+                ObjectOutputStream oos = new ObjectOutputStream(fout);
+                
+                for (int j = 0; j < SIZE; j++)
+                    oos.writeObject(people[j]);
+                    
+                oos.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        Read
+            Person people[] = new Person [SIZE];
+            try {
+                FileInputStream fin = openFileInput(FILENAME);
+                ObjectInputStream ois = new ObjectInputStream(fin);
+                
+                for (int j = 0; j < SIZE; j++) {
+                    Person tempP = (Person) ois.readObject();
+                    people[j] = tempP;
+                }
+                
+                ois.close();
+            }catch(Exception ex){
+                ex.printStackTrace();
+            }
+        Update
+            Order of operations:
+                Read
+                <alter in some way>
+                Create
+        Delete
+            deleteFile(FILENAME) 
+        
+SMS(Requires permission)
+    Send
+        number=(EditText)findViewById(R.id.number);
+        String phoneNo = number.getText().toString();
+        String sms = sb.toString();
+
+        try {
+            SmsManager smsManager = SmsManager.getDefault();
+            smsManager.sendTextMessage(phoneNo, null, sms, null, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    Receive
+        //create class SmsReceiver
+        public class SmsReceiver extends BroadcastReceiver
+        {
+            final SmsManager sms = SmsManager.getDefault();
+
+            @Override
+            public void onReceive(Context context, Intent intent)
+            {
+                Bundle bundle = intent.getExtras();
+                SmsMessage[] recMsg = null;
+                String str = "";
+                
+                if (bundle != null)
+                {
+                    //---Access the received SMS message ---
+                    Object[] pdus = (Object[]) bundle.get("pdus");
+                    recMsg = new SmsMessage[pdus.length];
+                    
+                    for (int i=0; i<recMsg.length; i++){
+                        String format = bundle.getString("format");
+                        recMsg[i] = SmsMessage.createFromPdu((byte[]) pdus[i], format);
+                        str += "SMS Message received from: " + recMsg[i].getOriginatingAddress();
+                        str += "=>";
+                        str += recMsg[i].getMessageBody().toString();
+                        str += "\n"; //very important
+                    }
+                    
+                    //---display the SMS message received---
+                    Toast.makeText(context, str, Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+        
+        //in oncreate function of mainActivity in application
+        SmsReceiver SmsReceiver = new SmsReceiver();
+        IntentFilter mIntentFilter = new IntentFilter();
+        mIntentFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
+        registerReceiver(SmsReceiver, mIntentFilter);
+    
+how to request permission
+    //declare in manifest (before <application ... >)
+    <uses-permission android:name="android.permission.SEND_SMS"/>
+    <uses-permission android:name="android.permission.READ_SMS"/>
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+
+    //declare
+    private static final int REQUEST_SEND_SMS = 1;
+    private static final int REQUEST_RECEIVE_SMS = 2;
+    private static final int REQUEST_READ_SMS = 3;
+
+    //in oncreate function of mainActivity in application
+    
+    // Here, thisActivity is the current activity (note what is TOCHANGE depending on the request)
+    if (ContextCompat.checkSelfPermission(this,
+            Manifest.permission.RECEIVE_SMS) //TOCHANGE
+            != PackageManager.PERMISSION_GRANTED) {
+
+        // Should we show an explanation?
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.RECEIVE_SMS)) { //TOCHANGE
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.RECEIVE_SMS}, //TOCHANGE
+                    REQUEST_RECEIVE_SMS); //TOCHANGE
+            // Show an explanation to the user *asynchronously* -- don't block
+            // this thread waiting for the user's response! After the user
+            // sees the explanation, try again to request the permission.
+
+        } else {
+
+            // No explanation needed, we can request the permission.
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.RECEIVE_SMS}, //TOCHANGE
+                    REQUEST_RECEIVE_SMS); //TOCHANGE
+
+            // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+            // app-defined int constant. The callback method gets the
+            // result of the request.
+        }
+    }
+    
+    //add to general class
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+                Toast.makeText(getApplicationContext(), "Permission to send sms granted", Toast.LENGTH_LONG).show();
+            }case 2:{
+                Toast.makeText(getApplicationContext(), "Permission to receive sms granted", Toast.LENGTH_LONG).show();
+            }case 3:{
+                Toast.makeText(getApplicationContext(), "Permission to read sms granted", Toast.LENGTH_LONG).show();
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
+    
+general java programming
+    string to int {Integer.parseInt(<string>);}
+        String number = "10";
+        int result = Integer.parseInt(number);
+        System.out.println(result);
+    int to string {Integer.toString(<int>)}
+        int number = -782;
+        String numberAsString = Integer.toString(number);
+        
+    string to float {Float.parseInt(<string>);}
+        String numberAsString = "153.25";
+        float number = Float.parseFloat(numberAsString);
+        System.out.println("The number is: " + number);
+    float to string {Float.toString(<float>)}
+        float number = 0.1;
+        String a = Float.toString(number);
+        
+    try catch
+        try {
+
+        } catch (Exception e) {
+
+        }
+
+create java class (Person)
+    public class Person extends Application implements Serializable {
+        //private, can only be accessed from within these functions
+        private static int instanceCounter = 0;
+        
+        //public, can be accessed outside of these functions, elsewhere in the program
+        public int id;
+        public String firstName;
+        public String lastName;
+        public int orders;
+
+        public Person(String first, String last, int ord) {
+            id=instanceCounter++;
+            firstName = first;
+            lastName = last;
+            orders = ord;
+        }
+
+
+        public void updateOrders(){
+
+            orders = orders+1;
+        }
+
+
+        public String toString() {
+            return new String(firstName +  " " + lastName + " " +  orders);
+        }
+
+    }
+
+general Java file structure
+    public class HatBuy extends AppCompatActivity {
+        .
+        .
+        .
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_hat_buy);
+            
+            .
+            .
+            .
+        }
+    }
+    
+general notes
+    //onCreate, onActivityResult
+    @Override
+    protected ...
+    
+    //onRequestPermissionsResult, onReceive, onBackPressed
+    @Override
+    public 
+    
